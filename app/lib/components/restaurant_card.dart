@@ -4,16 +4,15 @@ import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 import 'package:pocketbase/pocketbase.dart';
 
-class EventCard extends StatelessWidget {
-   EventCard({super.key, required this.event, this.onTap});
+class RestaurantCard extends StatelessWidget {
+   RestaurantCard({super.key, required this.restaurant, this.onTap});
 
-  final RecordModel event;
+  final RecordModel restaurant;
   final void Function(RecordModel)? onTap;
   final String imageUrl = "${GetIt.instance<ConfigService>()['apiEndpoint']}/api/files/";
 
   Uri getImageUrl() {
-    return GetIt.instance<PocketBase>().files.getUrl(
-        event, event.data['thumbnail'] ?? event.expand['restaurant_id']?.first.data['thumbnail']);
+    return GetIt.instance<PocketBase>().files.getUrl(restaurant, restaurant.data['thumbnail']);
   }
 
   String formatDateTime(String dateTime) {
@@ -31,7 +30,7 @@ class EventCard extends StatelessWidget {
     return Material(
       color: Colors.transparent, // Ensures the ripple effect is visible
       child: InkWell(
-        onTap: () => onTap?.call(event),
+        onTap: () => onTap?.call(restaurant),
         borderRadius: BorderRadius.circular(8.0), // Matches the image border radius
         child: SizedBox(
           height: 160,
@@ -54,15 +53,15 @@ class EventCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      formatDateTime(event.data['start']),
+                      restaurant.data['city'],
                       style: Theme.of(context).textTheme.titleSmall,
                     ),
                     Text(
-                      event.expand['restaurant_id']?.first.data['restaurant_name'] ?? '',
+                      restaurant.data['restaurant_name'] ?? '',
                       style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.primaryContainer),
                     ),
                     const Spacer(),
-                    Text(event.data['title']),
+                    // Text(event.data['title']),
                   ],
                 ),
               ),
