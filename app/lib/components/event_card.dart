@@ -1,17 +1,18 @@
-import 'package:app/pages/discover.dart';
+import 'package:app/services/config_service.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 class EventCard extends StatelessWidget {
-  const EventCard({super.key, required this.event, this.onTap});
+   EventCard({super.key, required this.event, this.onTap});
 
   final RecordModel event;
   final void Function(RecordModel)? onTap;
-  final String imageUrl = 'http://127.0.0.1:8090/api/files';
+  final String imageUrl = "${GetIt.instance<ConfigService>()['apiEndpoint']}/api/files/";
 
   Uri getImageUrl() {
-    return pb.files.getUrl(event, event.data['thumbnail']);
+    return GetIt.instance<PocketBase>().files.getUrl(event, event.data['thumbnail']);
   }
 
   String formatDateTime(String dateTime) {
