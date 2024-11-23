@@ -44,18 +44,20 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_title, style: Theme.of(context).textTheme.titleMedium),
+        title: Text(_title, style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold)),
         centerTitle: false,
+        surfaceTintColor: Colors.transparent,
         // Searchbar
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(48),
           child: Padding(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
             child: TextField(
               decoration: InputDecoration(
                 hintText: 'Search',
                 prefixIcon: const Icon(Icons.search),
                 isDense: true,
+                fillColor: Theme.of(context).colorScheme.onPrimaryContainer,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(1000),
                 ),
