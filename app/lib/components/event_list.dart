@@ -2,7 +2,8 @@ import 'package:app/components/event_card.dart';
 import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
 
-final PocketBase pb = PocketBase('http://127.0.0.1:8090');
+const String pocketBaseUrl = 'http://127.0.0.1:8090/';
+final PocketBase pb = PocketBase(pocketBaseUrl);
 
 class EventList extends StatefulWidget {
   const EventList({super.key, required this.fetcher, this.onTap});
