@@ -54,11 +54,11 @@ class EventCard extends StatelessWidget {
                   children: [
                     Text(
                       formatDateTime(event.data['start']),
-                      style: const TextStyle(fontSize: 16),
+                      style: Theme.of(context).textTheme.titleSmall,
                     ),
                     Text(
                       event.expand['restaurant_id']?.first.data['restaurant_name'] ?? '',
-                      style: const TextStyle(fontSize: 24),
+                      style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.primaryContainer),
                     ),
                     const Spacer(),
                     Text(event.data['title']),

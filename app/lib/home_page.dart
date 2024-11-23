@@ -34,7 +34,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   List<Widget> pages = <Widget>[
     const ForYouPage(),
-    const  DiscoverPage(),
+    const DiscoverPage(),
     const Center(
       child: Text('Tickets'),
     ),
@@ -43,6 +43,27 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text(_title, style: Theme.of(context).textTheme.titleMedium),
+        centerTitle: false,
+        // Searchbar
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(48),
+          child: Padding(
+            padding: const EdgeInsets.all(8),
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: 'Search',
+                prefixIcon: const Icon(Icons.search),
+                isDense: true,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(1000),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
       body: pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
