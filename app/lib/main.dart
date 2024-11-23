@@ -19,8 +19,10 @@ void setup() {
   }, dependsOn: [ConfigService]);
 }
 
-void main() {
+void main() async {
   setup();
+  WidgetsFlutterBinding.ensureInitialized();
+  await di.allReady();
   runApp(const MyApp());
 }
 
