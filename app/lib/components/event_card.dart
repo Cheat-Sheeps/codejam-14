@@ -57,7 +57,7 @@ class EventCard extends StatelessWidget {
                     ),
                     Text(
                       event.expand['restaurant_id']?.first.data['restaurant_name'] ?? '',
-                      style: Theme.of(context).textTheme.titleLarge,
+                      style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.primaryContainer),
                     ),
                     const Spacer(),
                     Text(event.data['title']),
