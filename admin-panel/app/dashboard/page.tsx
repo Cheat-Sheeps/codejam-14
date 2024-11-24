@@ -55,11 +55,23 @@ export default function DashboardPage() {
 		router.push("/login");
 	};
 
+	const formatPrice = (price: number) => {
+		return new Intl.NumberFormat("en-US", {
+			style: "currency",
+			currency: "USD",
+		}).format(price / 100);
+	}
+
 	return (
 		<div className="">
 			<nav className="text-white py-4">
 				<div className="container mx-auto flex justify-between items-center">
-					<h1 className="text-3xl font-bold">Your Events</h1>
+					<div className="flex flex-col gap-1">
+						<h1 className="text-3xl font-bold">Your Events</h1>
+						<p className="text-sm text-gray-300">
+							{pb.authStore.model?.email}
+						</p>
+					</div>
 					<div className="flex items-center space-x-4">
 						<Button
 							onClick={() => router.push("/dashboard/create-event")}
@@ -101,7 +113,9 @@ export default function DashboardPage() {
 									<TableCell>
 										{new Date(event.end).toLocaleString()}
 									</TableCell>
-									<TableCell>${event.price}</TableCell>
+									<TableCell>
+										{formatPrice(event.price)}
+									</TableCell>
 									<TableCell>
 										{event.tickets_available}
 									</TableCell>

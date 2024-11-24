@@ -92,15 +92,13 @@ class _BuyTicketsPageState extends State<BuyTicketsPage> {
     setState(() {});
   }
 
-
   createTickets() async {
     setState(() {
       _isLoading = true;
     });
 
     try {
-      final tickets = await GetIt.instance<PocketBase>().collection('tickets').create(
-        body: {
+      final tickets = await GetIt.instance<PocketBase>().collection('tickets').create(body: {
         'user': GetIt.instance<PocketBase>().authStore.model.id,
         'event': widget.event.id,
         'amount': ticketCount,
@@ -185,6 +183,12 @@ class _BuyTicketsPageState extends State<BuyTicketsPage> {
     }
 
     return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          widget.event.expand['restaurant_id']?.first.data['restaurant_name'] ?? '',
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+      ),
       body: SafeArea(
         child: Expanded(
           child: SingleChildScrollView(
@@ -194,11 +198,6 @@ class _BuyTicketsPageState extends State<BuyTicketsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    widget.event.expand['restaurant_id']?.first.data['restaurant_name'] ?? '',
-                    style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 12),
                   IntrinsicHeight(
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,

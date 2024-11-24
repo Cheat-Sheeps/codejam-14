@@ -31,7 +31,7 @@ export default function SignUpPage() {
 
 		try {
 			const formData = new FormData();
-			formData.append("username", restaurantName.toLowerCase().replace(/\s+/g, "_"));
+			formData.append("username", restaurantName.split(' ')[0].toLowerCase().replace(/\s+/g, "_"));
 			formData.append("email", email);
 			formData.append("password", password);
 			formData.append("passwordConfirm", confirmPassword);

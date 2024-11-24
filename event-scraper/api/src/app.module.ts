@@ -7,6 +7,9 @@ import { PocketBaseService } from "./services/pocketbase.service";
 @Module({
   imports: [
     ConfigModule.forRoot({
+      load: [() => ({
+        port: parseInt(process.env.PORT, 10) || 3000,
+      })],
       isGlobal: true,
     }),
   ],

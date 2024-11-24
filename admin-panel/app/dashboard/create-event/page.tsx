@@ -16,11 +16,14 @@ import { Input } from "@/components/ui/input";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { Textarea } from "@/components/ui/textarea";
 
 const formSchema = z.object({
 	title: z.string().min(1, "Title is required"),
 	start: z.string().min(1, "Start time is required"),
-	end: z.string().min(1, "End time is required"),
+	genre: z.string().min(1, "Genre is required"),
+	thumbnail: z.any(),
+	description: z.string().min(1, "Description is required"),
 	price: z.string(),
 	tickets_available: z.string(),
 });
@@ -28,35 +31,46 @@ const formSchema = z.object({
 export default function CreateEventPage() {
 	const router = useRouter();
 	const [error, setError] = useState("");
+	const [thumbnail, setThumbnail] = useState<File | null>(null);
 
 	const form = useForm({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
 			title: "",
 			start: "",
-			end: "",
+			genre: "",
+			thumbnail: undefined,
+			description: "",
 			price: "0",
-			tickets_available: "0",
+			tickets_available: "100",
 		},
 	});
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		try {
 			const user = pb.authStore.model; // Get the logged-in user
+			console.log(pb.authStore);
 			if (!user) throw new Error("User not authenticated.");
 
-			const price = parseFloat(values.price.toString());
+			const price = parseFloat(values.price.toString()) * 100;
 			const ticketsAvailable = parseInt(
 				values.tickets_available.toString(),
 				10
 			);
 
-			await pb.collection("live_events").create({
-				...values,
-				price,
-				tickets_available: ticketsAvailable,
-				restaurant_id: user.id, // Link event to the logged-in user
-			});
+			const formData = new FormData();
+
+			formData.append("title", values.title);
+			formData.append("start", new Date(values.start).toISOString());
+			formData.append("genre", values.genre);
+			formData.append("description", values.description);
+			if (thumbnail)
+				formData.append("thumbnail", thumbnail);
+			formData.append("price", price.toString());
+			formData.append("tickets_available", ticketsAvailable.toString());
+			formData.append("restaurant_id", user.id);
+
+			await pb.collection("live_events").create(formData);
 
 			router.push("/dashboard"); // Redirect back to dashboard
 		} catch (err: unknown) {
@@ -68,8 +82,8 @@ export default function CreateEventPage() {
 		}
 	};
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const preprocessDataBeforeValidation = (data: any) => {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const preprocessDataBeforeValidation = (data: any) => {
 		return {
 			...data,
 			price: parseFloat(data.price), // Explicitly parse price as number
@@ -80,6 +94,13 @@ export default function CreateEventPage() {
 	const handleLogout = () => {
 		pb.authStore.clear(); // Clear session
 		router.push("/login"); // Redirect to login
+	};
+
+
+	const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		if (e.target.files && e.target.files[0]) {
+			setThumbnail(e.target.files[0]);
+		}
 	};
 
 	return (
@@ -94,7 +115,7 @@ export default function CreateEventPage() {
 					</div>
 				</div>
 			</nav>
-			<div className="container mx-auto py-10">
+			<div className="py-10 max-w-2xl mx-auto mt-20 gap-6">
 				<Form {...form}>
 					<form
 						onSubmit={form.handleSubmit((data) => {
@@ -105,88 +126,128 @@ export default function CreateEventPage() {
 						})}
 						className="space-y-6"
 					>
-						<FormField
-							control={form.control}
-							name="title"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Event Title</FormLabel>
-									<FormControl>
-										<Input
-											placeholder="Enter event title"
-											{...field}
-										/>
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-						<FormField
-							control={form.control}
-							name="start"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Start Date & Time</FormLabel>
-									<FormControl>
-										<Input
-											type="datetime-local"
-											{...field}
-										/>
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-						<FormField
-							control={form.control}
-							name="end"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>End Date & Time</FormLabel>
-									<FormControl>
-										<Input
-											type="datetime-local"
-											{...field}
-										/>
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-						<FormField
-							control={form.control}
-							name="price"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Price</FormLabel>
-									<FormControl>
-										<Input
-											type="number"
-											placeholder="Enter ticket price"
-											{...field}
-										/>
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-						<FormField
-							control={form.control}
-							name="tickets_available"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Tickets Available</FormLabel>
-									<FormControl>
-										<Input
-											type="number"
-											placeholder="Enter number of tickets"
-											{...field}
-										/>
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
+						<div className=" grid grid-cols-2 gap-6">
+							<FormField
+								control={form.control}
+								name="title"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>Event Title</FormLabel>
+										<FormControl>
+											<Input
+												placeholder="Enter event title"
+												{...field}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+							<FormField
+								control={form.control}
+								name="genre"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>Music Genre</FormLabel>
+										<FormControl>
+											<Input
+												placeholder="Enter event music genre"
+												{...field}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+							<FormField
+								control={form.control}
+								name="start"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>Start Date & Time</FormLabel>
+										<FormControl>
+											<Input
+												type="datetime-local"
+												{...field}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+							<FormField
+								control={form.control}
+								name="price"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>Price</FormLabel>
+										<FormControl>
+											<Input
+												type="number"
+												step={0.01}
+												placeholder="Enter ticket price"
+												{...field}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+							<FormField
+								control={form.control}
+								name="tickets_available"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>Tickets Available</FormLabel>
+										<FormControl>
+											<Input
+												type="number"
+												placeholder="Enter number of tickets"
+												{...field}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+							<FormField
+								control={form.control}
+								name="thumbnail"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>Event Thumbnail</FormLabel>
+										<FormControl>
+											<Input
+												{...field}
+												type="file"
+												accept="image/*"
+												onChange={handleThumbnailChange}
+												required
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+							<div className="col-span-2">
+								<FormField
+									control={form.control}
+									name="description"
+									render={({ field }) => (
+										<FormItem>
+											<FormLabel>Description</FormLabel>
+											<FormControl>
+												<Textarea
+													placeholder="Enter event description"
+													{...field}
+												/>
+											</FormControl>
+											<FormMessage />
+										</FormItem>
+									)}
+								/>
+							</div>
+						</div>
 						{error && (
 							<p className="text-red-500 text-sm">{error}</p>
 						)}
