@@ -19,7 +19,7 @@ class _DiscoverPageState extends State<DiscoverPage> {
     final String? filterQuery = filter.containsText.isEmpty ? null : 'restaurant_name ~ "${filter.containsText}"';
     final liveEvents = await GetIt.instance<PocketBase>()
         .collection('restaurant_owners')
-        .getList(perPage: 100, expand: "restaurant_id", filter: filterQuery);
+        .getList(perPage: 100, expand: "live_events_via_restaurant_owners.restaurant_id", filter: filterQuery);
 
 
     return liveEvents.items;

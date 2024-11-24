@@ -1,3 +1,4 @@
+import 'package:app/pages/buy_tickets.dart';
 import 'package:app/services/config_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -212,7 +213,9 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 6),
           child: MaterialButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => BuyTicketsPage(event: widget.event)));
+            },
             visualDensity: VisualDensity.comfortable,
             color: Theme.of(context).colorScheme.tertiaryContainer,
             textColor: Theme.of(context).colorScheme.onTertiaryContainer,

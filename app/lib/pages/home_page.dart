@@ -1,8 +1,15 @@
+import 'dart:math';
+
 import 'package:app/components/filter.dart';
+import 'package:app/components/login_widget.dart';
 import 'package:app/components/search_bar.dart';
 import 'package:app/pages/discover.dart';
 import 'package:app/pages/for_you.dart';
+import 'package:app/pages/login_page.dart';
+import 'package:app/services/auth_service.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:pocketbase/pocketbase.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -41,6 +48,13 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void _logout() {
+    GetIt.instance.get<AuthService>().clearToken();
+    GetIt.instance.get<PocketBase>().authStore.clear();
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage()));
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,6 +62,12 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(_title, style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold)),
         centerTitle: false,
         surfaceTintColor: Colors.transparent,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: _logout,
+          ),
+        ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(48),
           child: SearchBarWidget(onQueryUpdated: onQueryUpdated),

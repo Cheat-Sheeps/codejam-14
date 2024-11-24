@@ -19,7 +19,9 @@ void setup() {
     return PocketBase(apiEndpoint);
   }, dependsOn: [ConfigService]);
 
-  di.registerSingleton(AuthService());
+  di.registerSingletonWithDependencies<AuthService>(() {
+    return AuthService();
+  }, dependsOn: [PocketBase]);
 }
 
 void main() async {

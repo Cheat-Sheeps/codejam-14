@@ -35,7 +35,7 @@ class _EventListState extends State<EventList> {
   Widget build(BuildContext context) {
     _refreshEvents();
     return Padding(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       child: FutureBuilder(
         future: _futureEvents,
         builder: (BuildContext context, AsyncSnapshot snapshot) {

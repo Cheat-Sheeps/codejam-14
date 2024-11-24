@@ -1,4 +1,3 @@
-import 'package:app/services/config_service.dart';
 import 'package:flutter/material.dart';
 import 'package:app/services/auth_service.dart';
 import 'package:get_it/get_it.dart';
@@ -26,7 +25,7 @@ class LoginWidgetState extends State<LoginWidget> {
         return;
       }
 
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => const MyHomePage(title: 'LiveJam',),
@@ -48,7 +47,7 @@ class LoginWidgetState extends State<LoginWidget> {
       return;
     }
 
-    Navigator.push(
+    Navigator.pushReplacement(
       context,
       MaterialPageRoute(
         builder: (context) => const MyHomePage(title: 'LiveJam',),
@@ -60,16 +59,12 @@ class LoginWidgetState extends State<LoginWidget> {
   Widget build(BuildContext context) {
     _tryRefreshAuth();
 
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 400),
-          child: Card(
-            elevation: 8,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
+    return Scaffold(
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 400),
             child: Padding(
               padding: const EdgeInsets.all(20.0),
               child: Column(
@@ -86,6 +81,7 @@ class LoginWidgetState extends State<LoginWidget> {
                   const SizedBox(height: 20),
                   TextField(
                     controller: emailController,
+                    keyboardType: TextInputType.emailAddress,
                     decoration: const InputDecoration(
                       labelText: 'Email',
                       border: OutlineInputBorder(),

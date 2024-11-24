@@ -47,6 +47,11 @@ class AuthService {
     return prefs.getString('authToken');
   }
 
+  void clearToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('authToken');
+  }
+
   void _saveToken(String token) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('authToken', token);
