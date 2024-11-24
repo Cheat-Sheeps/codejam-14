@@ -19,7 +19,8 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
 
   Uri getImageUrl() {
     final isEmpty = widget.event.data['thumbnail'] == null || widget.event.data['thumbnail'] == '';
-    return GetIt.instance<PocketBase>().files.getUrl(isEmpty ? widget.event.expand['restaurant_id']!.first : widget.event,
+    return GetIt.instance<PocketBase>().files.getUrl(
+        isEmpty ? widget.event.expand['restaurant_id']!.first : widget.event,
         isEmpty ? widget.event.expand['restaurant_id']?.first.data['thumbnail'] : widget.event.data['thumbnail'],
         thumb: 'small');
   }
@@ -140,35 +141,37 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                   ),
                   // Text(widget.event.data['description']),
                   const SizedBox(height: 24),
-                  Text(widget.event.data['title'].toString().toUpperCase(),
-                      style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.normal)),
-                  const SizedBox(height: 12),
                   Row(
                     children: [
                       const Icon(
                         Icons.music_note,
-                        size: 16,
+                        size: 24,
                       ),
-                      Text(widget.event.data['genre']),
+                      Text(widget.event.data['genre'], style: Theme.of(context).textTheme.titleMedium),
                       const SizedBox(width: 12),
                       const Icon(
                         Icons.monetization_on_outlined,
-                        size: 16,
+                        size: 24,
                       ),
                       const SizedBox(width: 2),
-                      Text(widget.event.data['price'] == 0
-                          ? 'Free'
-                          : '${(widget.event.data['price'] / 100).toStringAsFixed(2)}'),
+                      Text(
+                          widget.event.data['price'] == 0
+                              ? 'Free'
+                              : '${(widget.event.data['price'] / 100).toStringAsFixed(2)}',
+                          style: Theme.of(context).textTheme.titleMedium),
                       const Spacer(),
                       const Icon(
                         Icons.schedule,
-                        size: 16,
+                        size: 24,
                       ),
                       const SizedBox(width: 2),
-                      Text(formatHour(widget.event.data['start'])),
+                      Text(formatHour(widget.event.data['start']), style: Theme.of(context).textTheme.titleMedium),
                     ],
                   ),
                   const SizedBox(height: 12),
+                  Text(widget.event.data['title'].toString().toUpperCase(),
+                      style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.normal)),
+                  const SizedBox(height: 24),
                   Text(widget.event.data['description']),
                 ],
               ),
