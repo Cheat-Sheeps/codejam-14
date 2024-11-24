@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 class EventList extends StatefulWidget {
-  const EventList({super.key, required this.fetcher, required this.filter, this.onTap});
+  const EventList({super.key, required this.fetcher, this.filter, this.onTap});
 
-  final Future<List<RecordModel>> Function(Filter filter) fetcher;
-  final Filter filter;
+  final Future<List<RecordModel>> Function(Filter? filter) fetcher;
+  final Filter? filter;
 
   final void Function(RecordModel)? onTap;
 

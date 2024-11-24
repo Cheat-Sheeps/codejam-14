@@ -15,11 +15,11 @@ class ForYouPage extends StatefulWidget {
 }
 
 class _ForYouPageState extends State<ForYouPage> {
-  Future<List<RecordModel>> getLiveEvents(Filter filter) async {
-    final String? filterQuery = filter.containsText.isEmpty ? null : 'title ~ "${filter.containsText}"';
+  Future<List<RecordModel>> getLiveEvents(Filter? filter) async {
+    final String? filterQuery = (filter?.containsText.isEmpty ?? false) ? null : 'title ~ "${filter!.containsText}" || description ~ "${filter.containsText}" || restaurant_id.restaurant_name ~ "${filter.containsText}"';
     final liveEvents = await GetIt.instance<PocketBase>()
         .collection('live_events')
-        .getList(perPage: 10, expand: "restaurant_id", sort: "start", filter: filterQuery);
+        .getList(perPage: 1000, expand: "restaurant_id", sort: "start", filter: filterQuery);
     return liveEvents.items;
   }
 
