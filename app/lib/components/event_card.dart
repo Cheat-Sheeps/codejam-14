@@ -5,25 +5,32 @@ import 'package:intl/intl.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 class EventCard extends StatelessWidget {
-   EventCard({super.key, required this.event, this.onTap});
+  EventCard({super.key, required this.event, this.onTap});
 
   final RecordModel event;
   final void Function(RecordModel)? onTap;
   final String imageUrl = "${GetIt.instance<ConfigService>()['apiEndpoint']}/api/files/";
 
   Uri getImageUrl() {
-    return GetIt.instance<PocketBase>().files.getUrl(
-        event, event.data['thumbnail'] ?? event.expand['restaurant_id']?.first.data['thumbnail']);
+    final isEmpty = event.data['thumbnail'] == null || event.data['thumbnail'] == '';
+    return GetIt.instance<PocketBase>().files.getUrl(isEmpty ? event.expand['restaurant_id']!.first : event,
+        isEmpty ? event.expand['restaurant_id']?.first.data['thumbnail'] : event.data['thumbnail'],
+        thumb: 'small');
   }
 
   String formatDateTime(String dateTime) {
     // Use this format: Sun Nov 14
     try {
       final date = DateTime.parse(dateTime);
-      return DateFormat('EEE MMM d').format(date);
+      return DateFormat('EEE MMM d - HH:mm').format(date);
     } catch (e) {
       return '';
     }
+  }
+
+  String formatPrice(int price) {
+    // divide by 100 to get the price in dollars and show 2 decimal places
+    return price == 0 ? 'Free' : '\$${(price / 100).toStringAsFixed(2)}';
   }
 
   @override
@@ -50,20 +57,43 @@ class EventCard extends StatelessWidget {
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      formatDateTime(event.data['start']),
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),
-                    Text(
-                      event.expand['restaurant_id']?.first.data['restaurant_name'] ?? '',
-                      style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.primaryContainer),
-                    ),
-                    const Spacer(),
-                    Text(event.data['title']),
-                  ],
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        formatDateTime(event.data['start']),
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                      Text(
+                        event.expand['restaurant_id']?.first.data['restaurant_name'] ?? '',
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleLarge!
+                            .copyWith(color: Theme.of(context).colorScheme.primaryContainer),
+                      ),
+                      const Spacer(),
+                      Text(event.data['title'], maxLines: 2, overflow: TextOverflow.ellipsis),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.music_note,
+                            size: 16,
+                          ),
+                          Text(event.data['genre']),
+                          const SizedBox(width: 12),
+                          const Icon(
+                            Icons.monetization_on_outlined,
+                            size: 16,
+                          ),
+                          const SizedBox(width: 2),
+                          Text(event.data['price'] == 0 ? 'Free' : '${(event.data['price'] / 100).toStringAsFixed(2)}'),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],

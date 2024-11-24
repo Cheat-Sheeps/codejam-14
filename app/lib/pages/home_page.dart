@@ -13,13 +13,14 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
+  String _query = '';
 
   String get _title {
     switch (_selectedIndex) {
       case 0:
-        return 'For You';
-      case 1:
         return 'Discover';
+      case 1:
+        return 'For You';
       case 2:
         return 'Tickets';
     }
@@ -33,8 +34,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   List<Widget> pages = <Widget>[
-    const ForYouPage(),
     const DiscoverPage(),
+    const ForYouPage(),
     const Center(
       child: Text('Tickets'),
     ),
@@ -53,6 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Padding(
             padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
             child: TextField(
+              onChanged: (value) => setState(() => _query = value),
               decoration: InputDecoration(
                 hintText: 'Search',
                 prefixIcon: const Icon(Icons.search),
