@@ -64,11 +64,11 @@ export default function DashboardPage() {
 
 	return (
 		<div className="">
-			<nav className="text-white py-4">
+			<nav className="py-4">
 				<div className="container mx-auto flex justify-between items-center">
 					<div className="flex flex-col gap-1">
 						<h1 className="text-3xl font-bold">Your Events</h1>
-						<p className="text-sm text-gray-300">
+						<p className="text-sm text-gray-500">
 							{pb.authStore.model?.email}
 						</p>
 					</div>

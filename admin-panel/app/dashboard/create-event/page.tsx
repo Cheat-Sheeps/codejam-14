@@ -105,7 +105,7 @@ export default function CreateEventPage() {
 
 	return (
 		<main className="">
-			<nav className="text-white py-4">
+			<nav className="py-4">
 				<div className="container mx-auto flex justify-between items-center">
 					<h1 className="text-3xl font-bold">Create a New Event</h1>
 					<div className="flex items-center space-x-4">

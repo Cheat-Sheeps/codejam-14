@@ -13,6 +13,39 @@ body {
 
 @layer base {
   :root {
+    --background: 30 20% 98%;
+    --foreground: 340 40% 40%;
+
+    --muted: 30 10% 90%;
+    --muted-foreground: 340 20% 50%;
+
+    --popover: 30 20% 98%;
+    --popover-foreground: 340 40% 40%;
+
+    --card: 30 20% 98%;
+    --card-foreground: 340 40% 40%;
+
+    --border: 30 15% 85%;
+    --input: 30 15% 85%;
+
+    --primary: 340 60% 55%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 30 10% 90%;
+    --secondary-foreground: 340 40% 40%;
+
+    --accent: 340 30% 90%;
+    --accent-foreground: 340 40% 40%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 100%;
+
+    --ring: 340 60% 55%;
+
+    --radius: 0.4rem;
+  }
+
+  .dark {
     --radius: 0.5rem;
     --gradient: linear-gradient(to top left,#B24592,#F15F79);
 
