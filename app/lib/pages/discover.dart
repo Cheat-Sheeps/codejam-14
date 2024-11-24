@@ -27,14 +27,13 @@ class _DiscoverPageState extends State<DiscoverPage> {
     List<RecordModel> items = [];
     for (var record in liveEvents.items) {
       String? x = record.expand['restaurant_id']?[0].data["restaurant_name"];
-      if (x == null || x.contains(filter.containsText))
+      if (x != null && x.toLowerCase().contains(filter.containsText.toLowerCase()))
       {
-        break;
+        items.add(record);
       }
-      items.add(record);
     }
 
-    return liveEvents.items;
+    return items;
   }
 
   @override
