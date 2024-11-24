@@ -1,3 +1,5 @@
+import 'package:app/components/filter.dart';
+import 'package:app/components/search_bar.dart';
 import 'package:app/pages/discover.dart';
 import 'package:app/pages/for_you.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +15,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
+  Filter _filter = Filter();
 
   String get _title {
     switch (_selectedIndex) {
@@ -32,13 +35,11 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  List<Widget> pages = <Widget>[
-    const ForYouPage(),
-    const DiscoverPage(),
-    const Center(
-      child: Text('Tickets'),
-    ),
-  ];
+  void onQueryUpdated(String query) {
+    setState(() {
+      _filter = Filter(query, _filter.matchesDate);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,26 +48,16 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(_title, style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold)),
         centerTitle: false,
         surfaceTintColor: Colors.transparent,
-        // Searchbar
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(48),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'Search',
-                prefixIcon: const Icon(Icons.search),
-                isDense: true,
-                fillColor: Theme.of(context).colorScheme.onPrimaryContainer,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(1000),
-                ),
-              ),
-            ),
-          ),
+          child: SearchBarWidget(onQueryUpdated: onQueryUpdated),
         ),
       ),
-      body: pages[_selectedIndex],
+      body: <Widget>[
+        ForYouPage(filter: _filter),
+        DiscoverPage(filter: _filter),
+        const Text('Tickets'),
+      ].elementAt(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,

@@ -44,6 +44,22 @@ class EventCard extends StatelessWidget {
                   child: Image.network(
                     getImageUrl().toString(),
                     fit: BoxFit.cover,
+                    frameBuilder: (BuildContext context, Widget child, int? frame, bool wasSynchronouslyLoaded) {
+                      if (wasSynchronouslyLoaded) {
+                        return child;
+                      }
+                      return AnimatedOpacity(
+                        opacity: frame == null ? 0 : 1,
+                        duration: const Duration(seconds: 1),
+                        curve: Curves.easeOut,
+                        child: child,
+                      );
+                    },
+                    errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+                      return const Center(
+                        child: Icon(Icons.error),
+                      );
+                    },
                   ),
                 ),
               ),

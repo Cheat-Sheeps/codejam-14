@@ -1,11 +1,13 @@
 import 'package:app/components/event_card.dart';
+import 'package:app/components/filter.dart';
 import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 class EventList extends StatefulWidget {
-  const EventList({super.key, required this.fetcher, this.onTap});
+  const EventList({super.key, required this.fetcher, required this.filter, this.onTap});
 
-  final Future<List<RecordModel>> Function() fetcher;
+  final Future<List<RecordModel>> Function(Filter filter) fetcher;
+  final Filter filter;
 
   final void Function(RecordModel)? onTap;
 
@@ -19,18 +21,19 @@ class _EventListState extends State<EventList> {
   @override
   void initState() {
     super.initState();
-    _futureEvents = widget.fetcher();
+    _futureEvents = widget.fetcher(widget.filter);
   }
 
   Future<void> _refreshEvents() async {
     setState(() {
-      _futureEvents = widget.fetcher();
+      _futureEvents = widget.fetcher(widget.filter);
     });
     await _futureEvents;
   }
 
   @override
   Widget build(BuildContext context) {
+    _refreshEvents();
     return Padding(
       padding: const EdgeInsets.all(12),
       child: FutureBuilder(
@@ -50,8 +53,8 @@ class _EventListState extends State<EventList> {
                 ),
               );
             } else if (snapshot.hasError) {
-              return const Center(
-                child: Text('Error loading data'),
+              return Center(
+                child: Text('Error loading data: ${snapshot.error}'),
               );
             }
           }
