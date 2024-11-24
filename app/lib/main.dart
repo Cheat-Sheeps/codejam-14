@@ -1,4 +1,5 @@
-import 'package:app/pages/home_page.dart';
+import 'package:app/pages/login_page.dart';
+import 'package:app/services/auth_service.dart';
 import 'package:app/services/config_service.dart';
 import 'package:app/theme.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,8 @@ void setup() {
     final apiEndpoint = di<ConfigService>()['apiEndpoint'];
     return PocketBase(apiEndpoint);
   }, dependsOn: [ConfigService]);
+
+  di.registerSingleton(AuthService());
 }
 
 void main() async {
@@ -32,11 +35,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'LiveJam',
       theme: MaterialTheme(createTextTheme(context, "Ubuntu", "Oswald")).lightMediumContrast(),
       darkTheme: MaterialTheme(createTextTheme(context, "Ubuntu", "Oswald")).darkMediumContrast(),
       themeMode: ThemeMode.system,
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const LoginPage(),
     );
   }
 }
