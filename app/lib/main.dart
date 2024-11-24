@@ -1,4 +1,4 @@
-import 'package:app/home_page.dart';
+import 'package:app/pages/home_page.dart';
 import 'package:app/services/config_service.dart';
 import 'package:app/theme.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +33,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: MaterialTheme(createTextTheme(context, "Roboto", "Adamina")).darkHighContrast(),
+      theme: MaterialTheme(createTextTheme(context, "Roboto", "Ubuntu")).lightMediumContrast(),
+      darkTheme: MaterialTheme(createTextTheme(context, "Roboto", "Ubuntu")).darkMediumContrast(),
       themeMode: ThemeMode.system,
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );

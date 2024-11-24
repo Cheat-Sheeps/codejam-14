@@ -1,5 +1,6 @@
 import 'package:app/components/event_list.dart';
 import 'package:app/components/filter.dart';
+import 'package:app/pages/event_details.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:pocketbase/pocketbase.dart';
@@ -27,8 +28,13 @@ class _ForYouPageState extends State<ForYouPage> {
     return EventList(
       fetcher: getLiveEvents,
       filter: widget.filter,
-      onTap: (p0) {
-        print(p0);
+      onTap: (event) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EventDetailsPage(event: event),
+          ),
+        );
       },
     );
   }

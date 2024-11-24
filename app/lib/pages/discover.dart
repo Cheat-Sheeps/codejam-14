@@ -2,6 +2,7 @@ import 'package:app/components/event_list.dart';
 import 'package:app/components/filter.dart';
 import 'package:app/components/search_bar.dart';
 import 'package:app/services/config_service.dart';
+import 'package:app/components/restaurant_list.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:pocketbase/pocketbase.dart';
@@ -16,7 +17,7 @@ class DiscoverPage extends StatefulWidget {
 }
 
 class _DiscoverPageState extends State<DiscoverPage> {
-  Future<List<RecordModel>> getLiveEvents(Filter filter) async {
+  Future<List<RecordModel>> getRestaurants(Filter filter) async {
     String query = "";
 
     // TODO date
@@ -38,8 +39,8 @@ class _DiscoverPageState extends State<DiscoverPage> {
 
   @override
   Widget build(BuildContext context) {
-    return EventList(
-      fetcher: getLiveEvents,
+    return const RestaurantList(
+      fetcher: getRestaurants,
       filter: widget.filter
     );
   }
