@@ -17,9 +17,10 @@ class RestaurantEventsPage extends StatefulWidget {
 
 class _RestaurantEventsPageState extends State<RestaurantEventsPage> {
   Future<List<RecordModel>> getLiveEvents(Filter? filter) async {
+    final now = DateTime.now().toIso8601String();
     final liveEvents = await GetIt.instance<PocketBase>()
         .collection('live_events')
-        .getList(perPage: 1000, expand: "restaurant_id", sort: "start", filter: 'restaurant_id ~ "${widget.restaurantId}"');
+        .getList(perPage: 1000, expand: "restaurant_id", sort: "start", filter: 'start >= "$now" && restaurant_id ~ "${widget.restaurantId}"');
     return liveEvents.items;
   }
 
