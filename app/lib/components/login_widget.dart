@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:app/services/auth_service.dart';
+import 'package:get_it/get_it.dart';
+import 'package:app/pages/home_page.dart';
+import 'package:pocketbase/pocketbase.dart';
 
 class LoginWidget extends StatefulWidget {
   const LoginWidget({super.key});
@@ -9,41 +12,59 @@ class LoginWidget extends StatefulWidget {
 }
 
 class LoginWidgetState extends State<LoginWidget> {
-  final AuthService authService = AuthService();
+  final PocketBase pb = GetIt.instance<PocketBase>();
+  final AuthService authService = GetIt.instance<AuthService>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
   String? errorMessage = "";
 
+  void _tryRefreshAuth() {
+    authService.authFromToken().then((result) {
+      if (result.isFailure) {
+        return;
+      }
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const MyHomePage(title: 'LiveJam',),
+        ),
+      );
+    });
+  }
+
   void _login() async {
     final String email = emailController.text;
     final String password = passwordController.text;
 
-    final String? error = await authService.authWithPassword(email, password);
-    if (error == null)
+    final AuthResult result = await authService.authWithPassword(email, password);
+    if (result.isFailure)
     {
       setState(() {
-        errorMessage = null;
+        errorMessage = "Login failed: ${result.data}";
       });
-    } else {
-      setState(() {
-        errorMessage = "Login failed: $error";
-      });
+      return;
     }
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const MyHomePage(title: 'LiveJam',),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 400),
-          child: Card(
-            elevation: 8,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
+    _tryRefreshAuth();
+
+    return Scaffold(
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 400),
             child: Padding(
               padding: const EdgeInsets.all(20.0),
               child: Column(
@@ -60,6 +81,7 @@ class LoginWidgetState extends State<LoginWidget> {
                   const SizedBox(height: 20),
                   TextField(
                     controller: emailController,
+                    keyboardType: TextInputType.emailAddress,
                     decoration: const InputDecoration(
                       labelText: 'Email',
                       border: OutlineInputBorder(),

@@ -1,60 +1,63 @@
-import 'package:app/components/event_card.dart';
 import 'package:app/components/filter.dart';
+import 'package:app/components/restaurant_card.dart';
 import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
 
-class EventList extends StatefulWidget {
-  const EventList({super.key, required this.fetcher, this.filter, this.onTap});
+const String pocketBaseUrl = 'http://127.0.0.1:8090/';
+final PocketBase pb = PocketBase(pocketBaseUrl);
 
-  final Future<List<RecordModel>> Function(Filter? filter) fetcher;
-  final Filter? filter;
+class RestaurantList extends StatefulWidget {
+  const RestaurantList({super.key, required this.fetcher, required this.filter, this.onTap});
+
+  final Future<List<RecordModel>> Function(Filter filter) fetcher;
+  final Filter filter;
 
   final void Function(RecordModel)? onTap;
 
   @override
-  State<EventList> createState() => _EventListState();
+  State<RestaurantList> createState() => _RestaurantListState();
 }
 
-class _EventListState extends State<EventList> {
-  late Future<List<RecordModel>> _futureEvents;
+class _RestaurantListState extends State<RestaurantList> {
+  late Future<List<RecordModel>> _futureRestaurants;
 
   @override
   void initState() {
     super.initState();
-    _futureEvents = widget.fetcher(widget.filter);
+    _futureRestaurants = widget.fetcher(widget.filter);
   }
 
-  Future<void> _refreshEvents() async {
+  Future<void> _refreshRestaurants() async {
     setState(() {
-      _futureEvents = widget.fetcher(widget.filter);
+      _futureRestaurants = widget.fetcher(widget.filter);
     });
-    await _futureEvents;
+    await _futureRestaurants;
   }
 
   @override
   Widget build(BuildContext context) {
-    _refreshEvents();
+    _refreshRestaurants();
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.all(12),
       child: FutureBuilder(
-        future: _futureEvents,
+        future: _futureRestaurants,
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasData) {
               final List<RecordModel> liveEvents = snapshot.data;
               return RefreshIndicator(
-                onRefresh: _refreshEvents,
+                onRefresh: _refreshRestaurants,
                 child: ListView.separated(
                   itemCount: liveEvents.length,
                   separatorBuilder: (BuildContext context, int index) => const SizedBox(height: 24),
                   itemBuilder: (BuildContext context, int index) {
-                    return EventCard(event: liveEvents[index], onTap: widget.onTap);
+                    return RestaurantCard(restaurant: liveEvents[index], onTap: widget.onTap);
                   },
                 ),
               );
             } else if (snapshot.hasError) {
-              return Center(
-                child: Text('Error loading data: ${snapshot.error}'),
+              return const Center(
+                child: Text('Error loading data'),
               );
             }
           }
