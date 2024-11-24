@@ -92,86 +92,115 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                     style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(
-                        flex: 3,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8.0),
-                          child: AspectRatio(
-                            aspectRatio: 1,
-                            child: Image.network(
-                              getImageUrl().toString(),
-                              fit: BoxFit.cover,
+                  IntrinsicHeight(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          flex: 4,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8.0),
+                            child: AspectRatio(
+                              aspectRatio: 1,
+                              child: Image.network(
+                                getImageUrl().toString(),
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      Expanded(
-                        flex: 2,
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(12, 0, 64, 0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                formatWeekDay(widget.event.data['start']),
-                                style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'RobotoMono',
-                                    color: Theme.of(context).colorScheme.primaryContainer),
-                              ),
-                              Text(
-                                formatDay(widget.event.data['start']),
-                                style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 52,
-                                    color: Theme.of(context).colorScheme.primaryContainer),
-                              ),
-                              Text(
-                                formatMonth(widget.event.data['start']),
-                                style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                                    fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primaryContainer),
-                              ),
-                            ],
+                        Expanded(
+                          flex: 2,
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(12, 0, 0, 0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(height: 6),
+                                    Text(
+                                      formatWeekDay(widget.event.data['start']),
+                                      style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          height: 1.1,
+                                          fontFamily: 'RobotoMono',
+                                          color: Theme.of(context).colorScheme.primaryContainer),
+                                    ),
+                                    Text(
+                                      formatDay(widget.event.data['start']),
+                                      style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          height: 1.1,
+                                          fontSize: 52,
+                                          letterSpacing: 3,
+                                          color: Theme.of(context).colorScheme.primaryContainer),
+                                    ),
+                                    Text(
+                                      formatMonth(widget.event.data['start']),
+                                      style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: Theme.of(context).colorScheme.primaryContainer),
+                                    ),
+                                  ],
+                                ),
+                                Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        const Icon(
+                                          Icons.music_note,
+                                          size: 24,
+                                        ),
+                                        Text(widget.event.data['genre'],
+                                            style: Theme.of(context).textTheme.titleMedium),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Row(
+                                      children: [
+                                        const Icon(
+                                          Icons.monetization_on_outlined,
+                                          size: 24,
+                                        ),
+                                        const SizedBox(width: 2),
+                                        Text(
+                                            widget.event.data['price'] == 0
+                                                ? 'Free'
+                                                : '${(widget.event.data['price'] / 100).toStringAsFixed(2)}',
+                                            style: Theme.of(context).textTheme.titleMedium),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Row(
+                                      children: [
+                                        const Icon(
+                                          Icons.schedule,
+                                          size: 24,
+                                        ),
+                                        const SizedBox(width: 2),
+                                        Text(formatHour(widget.event.data['start']),
+                                            style: Theme.of(context).textTheme.titleMedium),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 6),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      )
-                    ],
-                  ),
-                  // Text(widget.event.data['description']),
-                  const SizedBox(height: 24),
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.music_note,
-                        size: 24,
-                      ),
-                      Text(widget.event.data['genre'], style: Theme.of(context).textTheme.titleMedium),
-                      const SizedBox(width: 12),
-                      const Icon(
-                        Icons.monetization_on_outlined,
-                        size: 24,
-                      ),
-                      const SizedBox(width: 2),
-                      Text(
-                          widget.event.data['price'] == 0
-                              ? 'Free'
-                              : '${(widget.event.data['price'] / 100).toStringAsFixed(2)}',
-                          style: Theme.of(context).textTheme.titleMedium),
-                      const Spacer(),
-                      const Icon(
-                        Icons.schedule,
-                        size: 24,
-                      ),
-                      const SizedBox(width: 2),
-                      Text(formatHour(widget.event.data['start']), style: Theme.of(context).textTheme.titleMedium),
-                    ],
+                        )
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 12),
-                  Text(widget.event.data['title'].toString().toUpperCase(),
+                  Text(widget.event.data['title'].toString(),
                       style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.normal)),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 12),
+                  const Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Divider()),
+                  const SizedBox(height: 12),
                   Text(widget.event.data['description']),
                 ],
               ),

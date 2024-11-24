@@ -33,8 +33,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: MaterialTheme(createTextTheme(context, "Roboto", "Ubuntu")).lightMediumContrast(),
-      darkTheme: MaterialTheme(createTextTheme(context, "Roboto", "Ubuntu")).darkMediumContrast(),
+      theme: MaterialTheme(createTextTheme(context, "Ubuntu", "Oswald")).lightMediumContrast(),
+      darkTheme: MaterialTheme(createTextTheme(context, "Ubuntu", "Oswald")).darkMediumContrast(),
       themeMode: ThemeMode.system,
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );

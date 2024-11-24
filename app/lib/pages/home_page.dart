@@ -20,9 +20,9 @@ class _MyHomePageState extends State<MyHomePage> {
   String get _title {
     switch (_selectedIndex) {
       case 0:
-        return 'For You';
+        return 'Events For You';
       case 1:
-        return 'Discover';
+        return 'Discover Live Music Restaurants';
       case 2:
         return 'Tickets';
     }
@@ -67,7 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
             label: 'For You',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.search),
+            icon: Icon(Icons.explore),
             label: 'Discover',
           ),
           BottomNavigationBarItem(
