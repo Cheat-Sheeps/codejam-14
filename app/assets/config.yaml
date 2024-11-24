@@ -1,1 +1,3 @@
-apiEndpoint: http://10.217.26.246:8090/
+apiEndpoint: http://localhost:8090/
+stripePublishableKey: pk_test_51QOZi2HlDFXhXC0Q5W2XgqPcp2HemqwXCp1e998Oy40X1sg7Oxn8ZPG6XK0XUJ3IQw0mMKN2QgY75DN1dJBtcYbe00UQyiQ6Wi
+stripeSK: sk_test_51QOZi2HlDFXhXC0QiN14OEUtBB7Nyf1X4TD1lxb58SxYSZNNhbL5QVyk6SsjPfxZysVCXKZpvP366ofR0ztkRUAc00MLZkSBuT

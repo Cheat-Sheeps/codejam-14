@@ -4,17 +4,22 @@ import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 import 'package:pocketbase/pocketbase.dart';
 
-class EventCard extends StatelessWidget {
-  EventCard({super.key, required this.event, this.onTap});
+class TicketCard extends StatelessWidget {
+  TicketCard({super.key, required this.ticket, this.onTap});
 
-  final RecordModel event;
+  final RecordModel ticket;
   final void Function(RecordModel)? onTap;
   final String imageUrl = "${GetIt.instance<ConfigService>()['apiEndpoint']}/api/files/";
 
   Uri getImageUrl() {
-    final isEmpty = event.data['thumbnail'] == null || event.data['thumbnail'] == '';
-    return GetIt.instance<PocketBase>().files.getUrl(isEmpty ? event.expand['restaurant_id']!.first : event,
-        isEmpty ? event.expand['restaurant_id']?.first.data['thumbnail'] : event.data['thumbnail'],
+    final isEmpty = ticket.expand['event']?.first.data['thumbnail'] == null;
+    return GetIt.instance<PocketBase>().files.getUrl(
+        isEmpty
+            ? ticket.expand['event']!.first.expand['restaurant_id']!.first
+            : ticket.expand['event']!.first,
+        isEmpty
+            ? ticket.expand['restaurant_id']!.first.data['thumbnail']
+            : ticket.expand['event']!.first.data['thumbnail'],
         thumb: 'small');
   }
 
@@ -30,10 +35,12 @@ class EventCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final event = ticket.expand['event']!.first;
+    final restaurant = event.expand['restaurant_id']!.first;
     return Material(
       color: Colors.transparent, // Ensures the ripple effect is visible
       child: InkWell(
-        onTap: () => onTap?.call(event),
+        onTap: () => onTap?.call(ticket),
         borderRadius: BorderRadius.circular(8.0), // Matches the image border radius
         child: SizedBox(
           height: 160,
@@ -74,38 +81,29 @@ class EventCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        formatDateTime(event.data['start']),
+                        formatDateTime(event.data['start'] ?? ''),
                         style: Theme.of(context).textTheme.titleSmall,
                       ),
-                      Text(event.expand['restaurant_id']?.first.data['restaurant_name'] ?? '',
-                          style: Theme.of(context).textTheme.titleLarge!
-                              .copyWith(color: Theme.of(context).colorScheme.primaryContainer)),
-                      const SizedBox(height: 4),
                       Text(
-                        event.data['title'],
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
+                        restaurant.data['restaurant_name'],
                         style: Theme.of(context)
                             .textTheme
-                            .bodyMedium!
-                            .copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                            .titleLarge!
+                            .copyWith(color: Theme.of(context).colorScheme.primaryContainer),
                       ),
-                      const Spacer(),
                       const SizedBox(height: 4),
+                      Text(event.data['title'], maxLines: 2, overflow: TextOverflow.ellipsis),
+                      const Spacer(),
                       Row(
                         children: [
                           const Icon(
-                            Icons.music_note,
-                            size: 16,
+                            Icons.person,
+                            size: 32,
                           ),
-                          Text(event.data['genre']),
-                          const Spacer(),
-                          const Icon(
-                            Icons.attach_money,
-                            size: 16,
+                          Text(
+                            '${ticket.data['amount']}',
+                            style: Theme.of(context).textTheme.titleLarge,
                           ),
-                          const SizedBox(width: 2),
-                          Text(event.data['price'] == 0 ? 'Free' : '${(event.data['price'] / 100).toStringAsFixed(2)}'),
                         ],
                       ),
                     ],

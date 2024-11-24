@@ -1,6 +1,5 @@
 import 'package:app/pages/buy_tickets.dart';
 import 'package:app/services/config_service.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
@@ -79,6 +78,9 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.event.expand['restaurant_id']?.first.data['restaurant_name'] ?? ''),
+      ),
       body: SafeArea(
         child: Expanded(
           child: SingleChildScrollView(
@@ -88,11 +90,6 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    widget.event.expand['restaurant_id']?.first.data['restaurant_name'] ?? '',
-                    style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 12),
                   IntrinsicHeight(
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -163,7 +160,7 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                                     Row(
                                       children: [
                                         const Icon(
-                                          Icons.monetization_on_outlined,
+                                          Icons.attach_money,
                                           size: 24,
                                         ),
                                         const SizedBox(width: 2),
@@ -198,7 +195,7 @@ class _EventDetailsPageState extends State<EventDetailsPage> {
                   ),
                   const SizedBox(height: 12),
                   Text(widget.event.data['title'].toString(),
-                      style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.normal)),
+                      style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.normal, color: Theme.of(context).colorScheme.onSurfaceVariant)),
                   const SizedBox(height: 12),
                   const Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: Divider()),
                   const SizedBox(height: 12),

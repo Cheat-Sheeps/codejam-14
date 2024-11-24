@@ -1,8 +1,13 @@
+import 'dart:convert';
+
+import 'package:app/pages/home_page.dart';
 import 'package:app/services/config_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_stripe/flutter_stripe.dart' as stripe;
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 import 'package:pocketbase/pocketbase.dart';
+import 'package:http/http.dart' as http;
 
 class BuyTicketsPage extends StatefulWidget {
   const BuyTicketsPage({super.key, required this.event});
@@ -15,6 +20,7 @@ class BuyTicketsPage extends StatefulWidget {
 
 class _BuyTicketsPageState extends State<BuyTicketsPage> {
   final String imageUrl = "${GetIt.instance<ConfigService>()['apiEndpoint']}/api/files/";
+  bool _isLoading = false;
 
   Uri getImageUrl() {
     final isEmpty = widget.event.data['thumbnail'] == null || widget.event.data['thumbnail'] == '';
@@ -25,7 +31,6 @@ class _BuyTicketsPageState extends State<BuyTicketsPage> {
   }
 
   String formatDateTime(String dateTime) {
-    // Use this format: Sun Nov 14
     try {
       final date = DateTime.parse(dateTime);
       return DateFormat('EEE MMM d').format(date);
@@ -35,7 +40,6 @@ class _BuyTicketsPageState extends State<BuyTicketsPage> {
   }
 
   String formatWeekDay(String dateTime) {
-    // Use this format: Sun
     try {
       final date = DateTime.parse(dateTime);
       return DateFormat('EEE').format(date);
@@ -45,7 +49,6 @@ class _BuyTicketsPageState extends State<BuyTicketsPage> {
   }
 
   String formatMonth(String dateTime) {
-    // Use this format: Nov
     try {
       final date = DateTime.parse(dateTime);
       return DateFormat('MMM').format(date);
@@ -55,7 +58,6 @@ class _BuyTicketsPageState extends State<BuyTicketsPage> {
   }
 
   String formatDay(String dateTime) {
-    // Use this format: 14
     try {
       final date = DateTime.parse(dateTime);
       return DateFormat('d').format(date);
@@ -65,7 +67,6 @@ class _BuyTicketsPageState extends State<BuyTicketsPage> {
   }
 
   String formatHour(String dateTime) {
-    // Use this format: 14
     try {
       final date = DateTime.parse(dateTime);
       return DateFormat('HH:mm').format(date);
@@ -74,11 +75,12 @@ class _BuyTicketsPageState extends State<BuyTicketsPage> {
     }
   }
 
-  String formatPrice(int price) {
-    return price == 0 ? 'Free' : 'CA\$${(price / 100).toStringAsFixed(2)}';
+  String formatPrice(int price, int quantity) {
+    return price == 0 ? 'Free' : 'CA\$${(price * quantity / 100).toStringAsFixed(2)}';
   }
 
   int ticketCount = 1;
+  Map<String, dynamic>? paymentIntentData;
 
   void incrementTicket() {
     ticketCount++;
@@ -90,8 +92,98 @@ class _BuyTicketsPageState extends State<BuyTicketsPage> {
     setState(() {});
   }
 
+
+  createTickets() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final tickets = await GetIt.instance<PocketBase>().collection('tickets').create(
+        body: {
+        'user': GetIt.instance<PocketBase>().authStore.model.id,
+        'event': widget.event.id,
+        'amount': ticketCount,
+      });
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      return tickets;
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      debugPrint(e.toString());
+    }
+  }
+
+  displayPaymentSheet() async {
+    try {
+      await stripe.Stripe.instance.presentPaymentSheet().then(
+        (value) async {
+          await createTickets();
+          Navigator.pushAndRemoveUntil(context,
+              MaterialPageRoute(builder: (context) => const HomePage(initOnTicketPage: true)), (route) => false);
+        },
+        onError: (e) {
+          debugPrint('Payment failed: $e');
+        },
+      );
+    } on stripe.StripeException catch (e) {
+      debugPrint('Payment failed: ${e.error.localizedMessage}');
+    } catch (e) {
+      debugPrint('An unexpected error occurred: $e');
+    }
+  }
+
+  createPaymentIntent(String amount, String currency) async {
+    final stripeSecretKey = GetIt.instance<ConfigService>()['stripeSK'];
+    try {
+      Map<String, dynamic> body = {'amount': amount, 'currency': currency, 'payment_method_types[]': 'card'};
+      var response = await http.post(
+        Uri.parse('https://api.stripe.com/v1/payment_intents'),
+        body: body,
+        headers: {'Authorization': 'Bearer $stripeSecretKey', 'Content-Type': 'application/x-www-form-urlencoded'},
+      );
+
+      return jsonDecode(response.body.toString());
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
+
+  Future<void> makePayment({required String amount, required String currency}) async {
+    try {
+      paymentIntentData = await createPaymentIntent(amount, currency);
+      const gpay = stripe.PaymentSheetGooglePay(
+        merchantCountryCode: "US",
+        currencyCode: "USD",
+        testEnv: true,
+      );
+      if (paymentIntentData != null) {
+        await stripe.Stripe.instance.initPaymentSheet(
+          paymentSheetParameters: stripe.SetupPaymentSheetParameters(
+            googlePay: gpay,
+            merchantDisplayName: 'Adiwele',
+            paymentIntentClientSecret: paymentIntentData!['client_secret'],
+            customerEphemeralKeySecret: paymentIntentData!['ephemeralKey'],
+          ),
+        );
+        displayPaymentSheet();
+      }
+    } catch (e, s) {
+      debugPrint('exception:$e$s');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
     return Scaffold(
       body: SafeArea(
         child: Expanded(
@@ -177,7 +269,7 @@ class _BuyTicketsPageState extends State<BuyTicketsPage> {
                                     Row(
                                       children: [
                                         const Icon(
-                                          Icons.monetization_on_outlined,
+                                          Icons.attach_money,
                                           size: 24,
                                         ),
                                         const SizedBox(width: 2),
@@ -281,17 +373,11 @@ class _BuyTicketsPageState extends State<BuyTicketsPage> {
                               Row(
                                 children: [
                                   Text(
-                                    formatPrice(widget.event.data['price']),
+                                    formatPrice(widget.event.data['price'], ticketCount),
                                     style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
                                     ),
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Icon(
-                                    Icons.info_outline,
-                                    color: Colors.grey.shade600,
-                                    size: 20,
                                   ),
                                 ],
                               ),
@@ -302,82 +388,14 @@ class _BuyTicketsPageState extends State<BuyTicketsPage> {
                       const SizedBox(height: 32),
                       SizedBox(
                         width: double.infinity,
-                        child: ElevatedButton.icon(
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder: (context) {
-                                return AlertDialog(
-                                  content: const Text(
-                                    "payment denied poor lol.",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      },
-                                      child: const Text(
-                                        "Close",
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          },
-                          icon: const Icon(Icons.apple, size: 20, color: Colors.white),
-                          label: const Text("Set up Apple Pay", style: TextStyle(color: Colors.white)),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.black,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      SizedBox(
-                        width: double.infinity,
                         child: ElevatedButton(
                           onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder: (context) {
-                                return AlertDialog(
-                                  content: const Text(
-                                    "You selected an alternative payment method.",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      },
-                                      child: const Text(
-                                        "Close",
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
+                            makePayment(amount: (widget.event.data['price'] * ticketCount).toString(), currency: 'cad');
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Theme.of(context).colorScheme.onSecondaryContainer,
                           ),
-                          child: const Text("Pay another way"),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        "By clicking Apple Pay, I agree to the LiveJam Terms of Service.",
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey,
+                          child: const Text("Buy Tickets"),
                         ),
                       ),
                     ],

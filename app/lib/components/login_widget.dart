@@ -28,7 +28,7 @@ class LoginWidgetState extends State<LoginWidget> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => const MyHomePage(title: 'LiveJam',),
+          builder: (context) => const HomePage(),
         ),
       );
     });
@@ -50,7 +50,7 @@ class LoginWidgetState extends State<LoginWidget> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => const MyHomePage(title: 'LiveJam',),
+        builder: (context) => const HomePage(),
       ),
     );
   }
