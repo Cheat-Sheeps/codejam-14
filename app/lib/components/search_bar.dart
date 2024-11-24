@@ -1,4 +1,5 @@
-import 'package:app/components/filter.dart';
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 class SearchBarWidget extends StatefulWidget {
@@ -11,7 +12,15 @@ class SearchBarWidget extends StatefulWidget {
 }
 
 class _SearchBarState extends State<SearchBarWidget> {
+  Timer? _debounce;
   final TextEditingController controller = TextEditingController();
+
+  @override
+  void dispose() {
+    controller.dispose();
+    _debounce?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,14 +29,17 @@ class _SearchBarState extends State<SearchBarWidget> {
       child: TextField(
         controller: controller,
         onChanged: (value) {
-          widget.onQueryUpdated(value);
+          if (_debounce?.isActive ?? false) _debounce!.cancel();
+          _debounce = Timer(const Duration(milliseconds: 500), () {
+            widget.onQueryUpdated(value);
+          });
         },
         decoration: InputDecoration(
           hintText: 'Search',
-          prefixIcon: const Icon(Icons.search),
           isDense: true,
+          prefixIcon: const Icon(Icons.search),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8000),
+            borderRadius: BorderRadius.circular(10000),
           ),
         ),
       ),

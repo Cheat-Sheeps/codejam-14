@@ -15,11 +15,10 @@ class DiscoverPage extends StatefulWidget {
 
 class _DiscoverPageState extends State<DiscoverPage> {
   Future<List<RecordModel>> getRestaurants(Filter filter) async {
-    String query = "";
-
+    final String? filterQuery = filter.containsText.isEmpty ? null : 'restaurant_name ~ "${filter.containsText}"';
     final liveEvents = await GetIt.instance<PocketBase>()
         .collection('restaurant_owners')
-        .getList(perPage: 100, expand: "restaurant_id", filter: query);
+        .getList(perPage: 100, expand: "restaurant_id", filter: filterQuery);
 
 
     return liveEvents.items;

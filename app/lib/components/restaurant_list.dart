@@ -27,7 +27,7 @@ class _RestaurantListState extends State<RestaurantList> {
     _futureRestaurants = widget.fetcher(widget.filter);
   }
 
-  Future<void> _refreshEvents() async {
+  Future<void> _refreshRestaurants() async {
     setState(() {
       _futureRestaurants = widget.fetcher(widget.filter);
     });
@@ -36,7 +36,7 @@ class _RestaurantListState extends State<RestaurantList> {
 
   @override
   Widget build(BuildContext context) {
-    _refreshEvents();
+    _refreshRestaurants();
     return Padding(
       padding: const EdgeInsets.all(12),
       child: FutureBuilder(
@@ -46,7 +46,7 @@ class _RestaurantListState extends State<RestaurantList> {
             if (snapshot.hasData) {
               final List<RecordModel> liveEvents = snapshot.data;
               return RefreshIndicator(
-                onRefresh: _refreshEvents,
+                onRefresh: _refreshRestaurants,
                 child: ListView.separated(
                   itemCount: liveEvents.length,
                   separatorBuilder: (BuildContext context, int index) => const SizedBox(height: 24),
