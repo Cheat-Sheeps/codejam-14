@@ -5,14 +5,15 @@ import 'package:intl/intl.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 class RestaurantCard extends StatelessWidget {
-   RestaurantCard({super.key, required this.restaurant, this.onTap});
+   RestaurantCard({super.key, required this.event, this.onTap});
 
-  final RecordModel restaurant;
+  final RecordModel event;
   final void Function(RecordModel)? onTap;
   final String imageUrl = "${GetIt.instance<ConfigService>()['apiEndpoint']}/api/files/";
 
   Uri getImageUrl() {
-    return GetIt.instance<PocketBase>().files.getUrl(restaurant, restaurant.data['thumbnail']);
+    return GetIt.instance<PocketBase>().files.getUrl(
+        event, event.data['thumbnail'] ?? event.expand['restaurant_id']?.first.data['thumbnail']);
   }
 
   String formatDateTime(String dateTime) {
@@ -30,7 +31,7 @@ class RestaurantCard extends StatelessWidget {
     return Material(
       color: Colors.transparent, // Ensures the ripple effect is visible
       child: InkWell(
-        onTap: () => onTap?.call(restaurant),
+        onTap: () => onTap?.call(event),
         borderRadius: BorderRadius.circular(8.0), // Matches the image border radius
         child: SizedBox(
           height: 160,
@@ -44,6 +45,22 @@ class RestaurantCard extends StatelessWidget {
                   child: Image.network(
                     getImageUrl().toString(),
                     fit: BoxFit.cover,
+                    frameBuilder: (BuildContext context, Widget child, int? frame, bool wasSynchronouslyLoaded) {
+                      if (wasSynchronouslyLoaded) {
+                        return child;
+                      }
+                      return AnimatedOpacity(
+                        opacity: frame == null ? 0 : 1,
+                        duration: const Duration(seconds: 1),
+                        curve: Curves.easeOut,
+                        child: child,
+                      );
+                    },
+                    errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+                      return const Center(
+                        child: Icon(Icons.error),
+                      );
+                    },
                   ),
                 ),
               ),
@@ -53,15 +70,15 @@ class RestaurantCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      restaurant.data['city'],
+                      formatDateTime(event.data['start']),
                       style: Theme.of(context).textTheme.titleSmall,
                     ),
                     Text(
-                      restaurant.data['restaurant_name'] ?? '',
+                      event.expand['restaurant_id']?.first.data['restaurant_name'] ?? '',
                       style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.primaryContainer),
                     ),
                     const Spacer(),
-                    // Text(event.data['title']),
+                    Text(event.data['title']),
                   ],
                 ),
               ),
