@@ -12,7 +12,7 @@ export default function LoginPage() {
 	const [error, setError] = useState("");
 	const router = useRouter();
 
-	const handleLogin = async (e: React.FormEvent) => {
+	const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
 		try {
@@ -47,7 +47,7 @@ export default function LoginPage() {
 						type="email"
 						placeholder="Email"
 						value={email}
-						onChange={(e) => setEmail(e.target.value)}
+						onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
 					/>
 				</div>
 				<div>
@@ -55,13 +55,23 @@ export default function LoginPage() {
 						type="password"
 						placeholder="Password"
 						value={password}
-						onChange={(e) => setPassword(e.target.value)}
+						onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
 					/>
 				</div>
 				{error && <p className="text-red-500">{error}</p>}
 				<Button type="submit" className="w-full">
 					Login
 				</Button>
+				<div className="text-center mt-4">
+					<Button
+						type="button"
+						variant="outline"
+						className="w-full"
+						onClick={() => router.push('/signup')}
+					>
+						Sign Up
+					</Button>
+				</div>
 			</form>
 		</div>
 	);

@@ -38,15 +38,12 @@ export default function DashboardPage() {
 	}, []);
 
 	const handleEdit = (eventId: string) => {
-		// Redirect to the event edit page (assuming you have one)
 		router.push(`/dashboard/edit-event/${eventId}`);
 	};
 
 	const handleDelete = async (eventId: string) => {
 		try {
-			// Delete the event
 			await pb.collection("live_events").delete(eventId);
-			// Re-fetch the events after deletion
 			setEvents(events.filter((event) => event.id !== eventId));
 		} catch (error) {
 			console.error("Error deleting event:", error);
@@ -54,8 +51,8 @@ export default function DashboardPage() {
 	};
 
 	const handleLogout = () => {
-		pb.authStore.clear(); // Clear session
-		router.push("/login"); // Redirect to login
+		pb.authStore.clear();
+		router.push("/login");
 	};
 
 	return (
@@ -65,11 +62,15 @@ export default function DashboardPage() {
 					<h1 className="text-3xl font-bold">Your Events</h1>
 					<div className="flex items-center space-x-4">
 						<Button
-							onClick={() =>
-								router.push("/dashboard/create-event")
-							}
+							onClick={() => router.push("/dashboard/create-event")}
 						>
 							Create Event
+						</Button>
+						<Button
+							onClick={() => router.push("/dashboard/import-events")}
+							variant="secondary"
+						>
+							Import Events
 						</Button>
 						<Button variant="ghost" onClick={handleLogout}>
 							Logout
@@ -113,9 +114,7 @@ export default function DashboardPage() {
 										</Button>
 										<Button
 											variant="destructive"
-											onClick={() =>
-												handleDelete(event.id)
-											}
+											onClick={() => handleDelete(event.id)}
 											className="ml-2"
 										>
 											<Trash />

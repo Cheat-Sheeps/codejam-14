@@ -16,7 +16,13 @@ export class EventsController {
   async getEvents(@Query('url') url: string, @Query('restaurant_id') restaurantId: string): Promise<Event[]> {
     try {
       if (!url || !restaurantId) {
-        throw new Error('Missing required query parameters');
+        throw new Error('Missing required query parameters: url, restaurant_id');
+      }
+      if (!url) {
+        throw new Error('Missing url required query parameters');
+      }
+      if (!restaurantId) {
+        throw new Error('Missing restaurant_id required query parameters');
       }
 
       // Scrape events

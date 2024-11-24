@@ -22,10 +22,16 @@ export class ScraperService {
 
     // Remove unnecessary tags
     const unnecessaryTags = [
-      'script', 'style', 'meta', 'link', 'noscript', 'iframe', 'svg',
-      'button', 'input', 'form', 'footer', 'header', 'nav', 'href'
+      'script', 'style', 'meta','link', 'iframe', 'svg',
+      'button', 'input', 'footer', 'header', 'nav', 'href'
     ];
-    unnecessaryTags.forEach(tag => $(tag).remove());
+    unnecessaryTags.forEach(tag => {
+      $(tag).each((_, element) => {
+        if (!$(element).children().length) {
+          $(element).remove();
+        }
+      });
+    });
 
     // Remove comments
     $('*').contents().each((_, element) => {
@@ -35,7 +41,7 @@ export class ScraperService {
     });
 
     // Keep only specific attributes
-    const keepAttrs = ['datetime', 'title', 'data-img', 'data-thumb'];
+    const keepAttrs = ['datetime', 'title', 'data-img', 'data-thumb', 'alt', 'href'];
     $('*').each((_, element) => {
       if ('attribs' in element) {
         const attributes = element.attribs || {};
@@ -82,7 +88,7 @@ export class ScraperService {
     // console.log(htmlContent);
     try {
       const prompt = `
-        We are in 2024.
+        We are on November 23 2024, assume events after december are in 2025.
         Extract all event information from the following HTML and return it as a JSON array.
         Each event in the array should follow this format:
         {
@@ -91,7 +97,7 @@ export class ScraperService {
           "startTime": string (date),
           "endTime": string (date, can be null),
           "price": int (can be null if free, multiply price by 100 for cents),
-          "thumbnailUrl": string (represent an image URL),
+          "thumbnailUrl": string (nullable, represent an image URL),
           "description": string (generate a 100 word description from the eventName and restaurantName),
           "genre": string (infer the genre from the eventName eg: Rock, Jazz, Hip Hop, etc)
         }

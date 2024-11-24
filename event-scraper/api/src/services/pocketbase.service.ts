@@ -67,6 +67,7 @@ export class PocketBaseService {
   }
 
   async saveEvents(events: Event[], restaurantId: string): Promise<void> {
+    let currentEvent: any = null;
     try {
       // Wait for client initialization if it hasn't completed
       if (!this.client) {
@@ -85,6 +86,7 @@ export class PocketBaseService {
           genre: event.genre || '',
           description: event.description || '',
         };
+        currentEvent = pbData
 
         // Convert pbData to FormData
         Object.entries(pbData).forEach(([key, value]) => {
@@ -112,6 +114,10 @@ export class PocketBaseService {
             this.logger.warn(`Failed to save events to PocketBase: Event already exists`);
             continue;
           }
+          if (error.response?.data?.thumbnail?.code === 'validation_file_size_limit') {
+            this.logger.warn(`Failed to save events to PocketBase: Thumbnail file size too large`);
+            continue;
+          }
           throw error;
         }
       }
@@ -122,6 +128,8 @@ export class PocketBaseService {
     } catch (error: any) {
       const errorMessage = error.response?.data?.title?.code || error.message || 'Unknown error';
       this.logger.error(`Failed to save events to PocketBase: ${errorMessage}`);
+      console.log(currentEvent)
+      console.log(error.response?.data)
       throw error;
     }
   }
