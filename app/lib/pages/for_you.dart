@@ -1,4 +1,4 @@
-import 'package:app/components/restaurant_list.dart';
+import 'package:app/components/event_list.dart';
 import 'package:app/components/filter.dart';
 import 'package:app/pages/event_details.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +25,7 @@ class _ForYouPageState extends State<ForYouPage> {
 
   @override
   Widget build(BuildContext context) {
-    return RestaurantList(
+    return EventList(
       fetcher: getLiveEvents,
       filter: widget.filter,
       onTap: (event) {
