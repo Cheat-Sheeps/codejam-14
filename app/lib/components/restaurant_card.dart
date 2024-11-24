@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 class RestaurantCard extends StatelessWidget {
-   RestaurantCard({super.key, required this.restaurant, this.onTap});
+  RestaurantCard({super.key, required this.restaurant, this.onTap});
 
   final RecordModel restaurant;
   final void Function(RecordModel)? onTap;
@@ -23,6 +23,18 @@ class RestaurantCard extends StatelessWidget {
     } catch (e) {
       return '';
     }
+  }
+
+  RecordModel? findNextEvent() {
+    final events = restaurant.expand['live_events_via_restaurant_id'];
+
+    if (events == null || events.isEmpty) {
+      return null;
+    }
+
+    events.sort((a, b) => a.data['start'].compareTo(b.data['start']));
+    final now = DateTime.now();
+    return events.firstWhere((event) => DateTime.parse(event.data['start']).isAfter(now));
   }
 
   @override
@@ -49,20 +61,32 @@ class RestaurantCard extends StatelessWidget {
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      restaurant.data['city'],
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),
-                    Text(
-                      restaurant.data['restaurant_name'] ?? '',
-                      style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.primaryContainer),
-                    ),
-                    const Spacer(),
-                    // Text(event.data['title']),
-                  ],
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        restaurant.data['city'],
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                      Text(
+                        restaurant.data['restaurant_name'] ?? '',
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleLarge!
+                            .copyWith(color: Theme.of(context).colorScheme.primaryContainer),
+                      ),
+                      const Spacer(),
+                      const Text('Next event:'),
+                      Text(
+                        findNextEvent()?.data['start'] != null
+                            ? formatDateTime(findNextEvent()!.data['start'])
+                            : 'No events',
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
