@@ -34,10 +34,20 @@ class _SearchBarState extends State<SearchBarWidget> {
             widget.onQueryUpdated(value);
           });
         },
+        
         decoration: InputDecoration(
           hintText: 'Search',
           isDense: true,
           prefixIcon: const Icon(Icons.search),
+          suffixIcon: controller.text.isNotEmpty
+              ? IconButton(
+                  icon: const Icon(Icons.clear),
+                  onPressed: () {
+                    controller.clear();
+                    widget.onQueryUpdated('');
+                  },
+                )
+              : null,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10000),
           ),
