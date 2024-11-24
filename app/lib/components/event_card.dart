@@ -12,8 +12,10 @@ class EventCard extends StatelessWidget {
   final String imageUrl = "${GetIt.instance<ConfigService>()['apiEndpoint']}/api/files/";
 
   Uri getImageUrl() {
-    return GetIt.instance<PocketBase>().files.getUrl(
-        event, event.data['thumbnail'] ?? event.expand['restaurant_id']?.first.data['thumbnail']);
+    final isEmpty = event.data['thumbnail'] == null || event.data['thumbnail'] == '';
+    return GetIt.instance<PocketBase>().files.getUrl(isEmpty ? event.expand['restaurant_id']!.first : event,
+        isEmpty ? event.expand['restaurant_id']?.first.data['thumbnail'] : event.data['thumbnail'],
+        thumb: 'small');
   }
 
   String formatDateTime(String dateTime) {

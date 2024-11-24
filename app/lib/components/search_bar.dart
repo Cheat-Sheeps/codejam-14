@@ -25,8 +25,9 @@ class _SearchBarState extends State<SearchBarWidget> {
         decoration: InputDecoration(
           hintText: 'Search',
           prefixIcon: const Icon(Icons.search),
+          isDense: true,
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(8000),
           ),
         ),
       ),

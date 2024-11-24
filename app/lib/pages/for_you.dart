@@ -19,7 +19,7 @@ class _ForYouPageState extends State<ForYouPage> {
     final String? filterQuery = filter.containsText.isEmpty ? null : 'title ~ "${filter.containsText}"';
     final liveEvents = await GetIt.instance<PocketBase>()
         .collection('live_events')
-        .getList(perPage: 10, expand: "restaurant_id", sort: "start", filter: filterQuery, query: {"search": filter.containsText});
+        .getList(perPage: 10, expand: "restaurant_id", sort: "start", filter: filterQuery);
     return liveEvents.items;
   }
 

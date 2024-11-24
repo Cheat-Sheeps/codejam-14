@@ -1,7 +1,4 @@
-import 'package:app/components/event_list.dart';
 import 'package:app/components/filter.dart';
-import 'package:app/components/search_bar.dart';
-import 'package:app/services/config_service.dart';
 import 'package:app/components/restaurant_list.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -20,26 +17,17 @@ class _DiscoverPageState extends State<DiscoverPage> {
   Future<List<RecordModel>> getRestaurants(Filter filter) async {
     String query = "";
 
-    // TODO date
     final liveEvents = await GetIt.instance<PocketBase>()
-        .collection('live_events')
-        .getList(perPage: 100, expand: "restaurant_id");
+        .collection('restaurant_owners')
+        .getList(perPage: 100, expand: "restaurant_id", filter: query);
 
-    List<RecordModel> items = [];
-    for (var record in liveEvents.items) {
-      String? x = record.expand['restaurant_id']?[0].data["restaurant_name"];
-      if (x != null && x.toLowerCase().contains(filter.containsText.toLowerCase()))
-      {
-        items.add(record);
-      }
-    }
 
-    return items;
+    return liveEvents.items;
   }
 
   @override
   Widget build(BuildContext context) {
-    return const RestaurantList(
+    return RestaurantList(
       fetcher: getRestaurants,
       filter: widget.filter
     );
